@@ -67,7 +67,7 @@ const Signup = ({ onClose, onLoginClick }) => {
         return;
       }
       // Store the user email
-      localStorage.setItem("email", email);
+      localStorage.setItem("userEmail", email);
       setShowOTP(true); // Show OTP input
       setLoading(false);
     } else {
@@ -86,7 +86,8 @@ const Signup = ({ onClose, onLoginClick }) => {
   // Function to handle OTP submission
   const handleOTPSubmit = async (otp) => {
     try {
-      let email = localStorage.getItem("email");
+      let email = localStorage.getItem("userEmail");
+      localStorage.removeItem('userEmail')
       let response = await fetch("/api/signup", {
         method: "POST",
         headers: {

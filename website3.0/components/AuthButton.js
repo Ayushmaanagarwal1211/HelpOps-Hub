@@ -2,16 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Profile from '@pages/Profile';
 import Popup from './Popup';
 import Login from './LoginSignup/Login';
 import Signup from './LoginSignup/Signup';
-
+import { useRouter } from 'next/navigation';
 const AuthButton = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [profile,showProfile]=useState(false)
+ let router=useRouter()
   useEffect(()=>{
     if(localStorage.getItem('userName')){
       showProfile(true)
@@ -28,6 +29,7 @@ let session=useSession()
  
   useEffect(()=>{
 
+    console.log(session)
     if(session.status=='authenticated'){
       // fetch("/api/login",{
       //   method:"POST",
@@ -51,7 +53,7 @@ let session=useSession()
         })
       })
     }
-  },[session.status])
+  },[])
   const toggleAuth = () => {
     setShowAuth(!showAuth);
   };
@@ -68,15 +70,34 @@ let session=useSession()
     setShowAuth(false);
     setIsLogin(true);
   };
+ async function handleLogout(){
+  if(session.status=="authenticated"){
+    localStorage.removeItem('userEmail')
+    localStorage.removeItem('email')
+    localStorage.removeItem('name')
 
+    localStorage.removeItem('userName')
+    localStorage.removeItem('image')
+    router.push('https://www.helpopshub.com/api/auth/signout?csrf=true')
+
+  }
+    localStorage.removeItem('userEmail')
+      localStorage.removeItem('email')
+      localStorage.removeItem('name')
+
+      localStorage.removeItem('userName')
+      localStorage.removeItem('image')
+      window.location.reload()
+  }
   return (
     <>
    {!profile &&   <button className="auth-btn" onClick={toggleAuth}>Login/Signup</button>
       }
      {
-  profile&& <div style={{width:"200px",display:"flex",alignItems:"center",gap:"20px"}}>
+  profile&&
+  <> <div style={{width:"200px",display:"flex",alignItems:"center",gap:"20px"}}>
 <img style={{height:"70px",width:"70px",borderRadius:"50%"}} src={`${localStorage.getItem('image')}`}/><h1>{localStorage.getItem('userName')}</h1>
-  </div>
+  </div><button onClick={handleLogout}>Logout</button></>
 }
       {showAuth && (
         <div className="auth-overlay" onClick={closeAuth}>
