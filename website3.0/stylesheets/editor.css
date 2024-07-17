@@ -1,7 +1,19 @@
 .ql-editor{
     word-wrap: anywhere !important;
     width: 100% !important;
+    z-index: 10000 !important;
 }
+.ql-toolbar{background-color: rgb(255, 255, 255) !important; 
+  z-index: 100000 !important;}
+  .classsa .ql-editor{
+    font-weight: 500;
+  }
+  .classsa .ql-editor p{
+    font-size: 40px !important;
+  }
+  .classsb .ql-editor p{
+    font-size: 33px !important;
+  }
 .classsa .ql-editor.ql-blank::before 
 {
 font-style: normal;
@@ -40,4 +52,17 @@ font-style: normal;
   }
   .ql-toolbar{
     visibility: hidden;
+  }
+  .classsa .ql-editor li{
+    font-size: 40px;
+  }
+  
+  .classsb .ql-editor li{
+    font-size: 30px;
+  }
+  .ql-editor ul{
+padding-left: 0px !important;
+  }
+  .ql-editor li{
+padding-left: 0.7em !important;
   }

@@ -127,6 +127,7 @@ console.log('sddddddddddddddd')
   // }, [draftId]);
 
   async function saveDraft() {
+    setIsDraftSaved(true);
     let response = await fetch('/api/savedraft', {
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
@@ -143,7 +144,6 @@ console.log('sddddddddddddddd')
       setDraftId(data.id);
       
       localStorage.setItem('draftId',data.id)
-      setIsDraftSaved(true);
       router.replace(`/createblog?id=${data.id}`);
     }
   }
@@ -309,7 +309,11 @@ console.log('sddddddddddddddd')
   const toolbar = quillInstance.container.parentNode.querySelector('.ql-toolbar');
   
   if(e &&e.length>0){
+    const { top, left, height } = quillInstance.getBounds(e.index, e.length);
     toolbar.style.visibility =  'visible';
+    toolbar.style.position = 'absolute';
+    toolbar.style.left = `${left}px`;
+    toolbar.style.top = `${top - toolbar.offsetHeight+50}px`;
   }else{
     toolbar.style.visibility =  'hidden';
   
@@ -321,7 +325,14 @@ console.log('sddddddddddddddd')
     
     console.log(e,'in toolbar 2 ')
     if(e && e.length>0){
+      const { top, left, height } = quillInstance.getBounds(e.index, e.length);
+
       toolbar.style.visibility =  'visible';
+      
+    toolbar.style.position = 'absolute';
+    toolbar.style.left = `${left}px`;
+    toolbar.style.top = `${top - toolbar.offsetHeight+200}px`;
+      
     }else{
       toolbar.style.visibility =  'hidden';
     
@@ -389,6 +400,13 @@ console.log('sddddddddddddddd')
       setMsg("Please Login First")
       return
     }
+    localStorage.setItem("showConfetti",true)
+    fetch('/api/getdraft',{
+      method:"DELETE",
+      body:JSON.stringify({
+        id:localStorage.getItem('draftId')
+      })
+    })
     let user=await JSON.parse(localStorage.getItem("finalUser"))
       await fetch('/api/blog',{
         method:"POST",

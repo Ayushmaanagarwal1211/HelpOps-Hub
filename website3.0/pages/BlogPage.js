@@ -9,6 +9,8 @@ import {
   faTimes,
   faBookmark as solidBookmark,
 } from "@fortawesome/free-solid-svg-icons";
+import Confetti from "react-confetti";
+
 import { faBookmark as regularBookmark } from "@fortawesome/free-regular-svg-icons";
 import { useRouter } from "next/navigation";
 import Skeleton from "react-loading-skeleton";
@@ -25,6 +27,7 @@ function BlogPage({ theme,finalUser,searchedBlog }) {
   const [filter, setFilter] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
+  const [confetti,setShowConfetti]=useState(false)
   const router = useRouter();
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -102,7 +105,16 @@ function BlogPage({ theme,finalUser,searchedBlog }) {
   const closeSidebar = () => {
     setSidebarOpen(false);
   };
+useEffect(()=>{
+  if(localStorage.getItem('showConfetti')){
+    setShowConfetti(true)
+    setTimeout(()=>{
+      localStorage.removeItem('showConfetti')
+      setShowConfetti(false)
+    },6000)
+  }
 
+},[])
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -234,14 +246,20 @@ function BlogPage({ theme,finalUser,searchedBlog }) {
       filtered = blogs.filter((blog) => reactionIds.includes(blog._id));
     }
     if (searchedBlog) {
-      filtered = filtered.filter((blog) =>
-        blog.title.toLowerCase().includes(searchedBlog.toLowerCase())
-      );
+      filtered = filtered.filter((blog) => {
+        const title = blog.title ? blog.title.toLowerCase() : "";
+        return title.includes(searchedBlog.toLowerCase());
+      });
     }
 
     return filtered;
   };
+  useEffect(()=>{
+setTimeout(()=>{setLoading(false)},4000)
+  },[])
   return (
+   <>
+    {confetti && <Confetti/>}
     <div
       className={`${
         theme ? "" : "bg-[#1e1d1d] text-white"
@@ -343,7 +361,7 @@ function BlogPage({ theme,finalUser,searchedBlog }) {
                     <hr className="w-full mt-5 mb-5 border-gray-200" />
                   </div>
                 ))
-              : filteredBlogs().map((blog, index) => {
+              :filteredBlogs().length==0?<div className="m-auto relative text-xl font-bold top-[17vh] text-center">No more blogs </div>: filteredBlogs().map((blog, index) => {
                   const author = authorDetails[blog.authorId];
                   if (!author) return null;
                   const isBookmarked = finalUser
@@ -444,7 +462,7 @@ function BlogPage({ theme,finalUser,searchedBlog }) {
                     <Skeleton count={2} />
                   </div>
                 ))
-              : finalEditorsPick.map((blog, index) => {
+              : finalEditorsPick.length==0?<div className="text-center w-[100%] relative m-auto ">No more Editor's Choice</div>:finalEditorsPick.map((blog, index) => {
                   const author = authorDetails[blog.authorId];
                   if (!author) return null;
 
@@ -485,7 +503,7 @@ function BlogPage({ theme,finalUser,searchedBlog }) {
                     <Skeleton width={100} />
                   </div>
                 ))
-              : topAuthors.map((author, index) => (
+              :topAuthors.length==0?<div className="text-center w-[100%] relative m-auto ">No more Key Influencers </div>: topAuthors.map((author, index) => (
                   <div key={index}>
                     <div className="flex gap-2 items-center mb-2">
                       <img
@@ -607,7 +625,7 @@ function BlogPage({ theme,finalUser,searchedBlog }) {
           </div>
         )}
       </div>
-    </div>
+    </div></>
   );
 }
 
